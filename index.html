@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>U CARS – Driven by You</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1E2D5A;--navy2:#263880;--gold:#E8870A;--gold2:#F5A623;--green:#16a34a;--red:#dc2626;--bg:#F7F8FC;--bdr:#E4E7EF;--tx:#1A1F36;--mu:#6B7280;--mu2:#9CA3AF;--sh:0 2px 12px rgba(30,45,90,.08);--sh2:0 8px 32px rgba(30,45,90,.14)}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+
+nav{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid var(--bdr);box-shadow:var(--sh);height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 48px}
+.nav-logo img{height:50px;width:auto;display:block}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-size:13px;font-weight:500;color:var(--mu);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--navy)}
+.nav-right{display:flex;gap:10px}
+.btn-sell{padding:8px 18px;background:var(--gold);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+.btn-sell:hover{background:var(--gold2)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hamburger span{width:22px;height:2px;background:var(--navy);border-radius:2px;display:block}
+.mob-nav{display:none;position:fixed;top:66px;left:0;right:0;background:#fff;border-bottom:1px solid var(--bdr);padding:16px 20px;flex-direction:column;gap:4px;z-index:199;box-shadow:var(--sh2)}
+.mob-nav.open{display:flex}
+.mob-nav a{font-size:14px;font-weight:500;color:var(--tx);text-decoration:none;padding:9px 4px;border-bottom:1px solid var(--bdr)}
+
+#hero{background:linear-gradient(135deg,#1E2D5A 0%,#263880 100%);padding:80px 48px;position:relative;overflow:hidden}
+.hero-dots{position:absolute;inset:0;opacity:.04;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:900px;margin:0 auto;text-align:center}
+.hero-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;color:rgba(255,255,255,.9);letter-spacing:1px;text-transform:uppercase;margin-bottom:18px}
+.hero-dot{width:7px;height:7px;background:#4ade80;border-radius:50%;animation:blink 2s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-title{font-family:'Poppins';font-size:clamp(28px,4vw,50px);font-weight:800;color:#fff;line-height:1.15;margin-bottom:14px}
+.hero-title .acc{color:var(--gold2)}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:26px}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hbtn{padding:13px 30px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s;border:none}
+.hbtn-pri{background:var(--gold);color:#fff;box-shadow:0 5px 18px rgba(232,135,10,.35)}
+.hbtn-pri:hover{background:var(--gold2);transform:translateY(-2px)}
+.hbtn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.3)!important}
+.hbtn-ghost:hover{background:rgba(255,255,255,.18)}
+.hero-stats{display:flex;gap:28px;justify-content:center;margin-top:30px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+.hstat .n{font-family:'Poppins';font-size:26px;font-weight:800;color:#fff}
+.hstat .l{font-size:11px;color:rgba(255,255,255,.5)}
+
+.trust{background:#fff;border-bottom:1px solid var(--bdr);padding:16px 48px;display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--mu)}
+.trust-item em{font-size:20px;font-style:normal}
+.trust-item strong{color:var(--navy);display:block}
+.trust-item span{display:block;font-size:11px;color:var(--mu2)}
+
+#inventory{padding:60px 48px;background:var(--bg)}
+.inv-hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.sec-eye{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.sec-title{font-family:'Poppins';font-size:clamp(22px,3vw,34px);font-weight:800;color:var(--navy);line-height:1.2}
+.inv-pill{font-size:12px;color:var(--mu);background:#fff;border:1px solid var(--bdr);padding:5px 14px;border-radius:20px}
+.filters{background:#fff;border:1px solid var(--bdr);border-radius:11px;padding:13px 16px;display:flex;gap:9px;flex-wrap:wrap;margin-bottom:24px;box-shadow:var(--sh)}
+.filters input,.filters select{flex:1;min-width:120px;padding:9px 12px;background:var(--bg);border:1.5px solid var(--bdr);color:var(--tx);font-size:13px;border-radius:7px;font-family:inherit;outline:none;transition:border-color .2s}
+.filters input:focus,.filters select:focus{border-color:var(--gold)}
+.filters input::placeholder{color:var(--mu2)}
+.fbtn-s{padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .2s}
+.fbtn-s:hover{background:var(--navy2)}
+.fbtn-c{padding:9px 14px;background:transparent;border:1.5px solid var(--bdr);color:var(--mu);border-radius:7px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s}
+.fbtn-c:hover{border-color:var(--gold);color:var(--gold)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:20px}
+.ccard{background:#fff;border:1px solid var(--bdr);border-radius:13px;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;animation:fadeUp .4s ease both}
+.ccard:hover{transform:translateY(-5px);box-shadow:var(--sh2);border-color:rgba(232,135,10,.28)}
+.ccard-img{position:relative;height:192px;overflow:hidden;background:#eef0f6;cursor:pointer}
+.ccard-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s;display:block}
+.ccard:hover .ccard-img img{transform:scale(1.04)}
+.ccard-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.5),transparent 45%);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px}
+.ccard:hover .ccard-ov{opacity:1}
+.view-lbl{background:rgba(255,255,255,.93);color:var(--navy);font-size:11px;font-weight:700;padding:5px 13px;border-radius:20px}
+.ph-cnt{position:absolute;top:9px;right:9px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;font-weight:600;padding:3px 8px;border-radius:11px}
+.st-badge{position:absolute;top:9px;left:9px;padding:4px 10px;border-radius:11px;font-size:10px;font-weight:700;text-transform:uppercase}
+.st-avail{background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0}
+.st-sold{background:#fee2e2;color:#dc2626;border:1px solid #fecaca}
+.ccard-body{padding:16px 18px}
+.c-make{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+.c-name{font-family:'Poppins';font-size:16px;font-weight:700;color:var(--navy);line-height:1.25;margin-bottom:2px}
+.c-meta{font-size:12px;color:var(--mu);margin-bottom:10px}
+.c-specs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.c-pill{padding:3px 9px;background:var(--bg);border:1px solid var(--bdr);border-radius:20px;font-size:11px;color:var(--mu)}
+.c-desc{font-size:12px;color:var(--mu);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.c-foot{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--bdr)}
+.c-price{font-family:'Poppins';font-size:21px;font-weight:800;color:var(--navy);line-height:1}
+.c-price small{font-size:11px;font-family:inherit;color:var(--mu);font-weight:400;display:block}
+.btn-inq{padding:8px 16px;background:var(--gold);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-inq:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn-inq:disabled{background:var(--mu2);cursor:not-allowed;transform:none}
+.no-cars{grid-column:1/-1;text-align:center;padding:60px;color:var(--mu)}
+
+.cta{background:var(--navy);padding:36px 48px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.cta h3{font-family:'Poppins';font-size:21px;font-weight:800;color:#fff;margin-bottom:3px}
+.cta p{color:rgba(255,255,255,.6);font-size:13px}
+.cta-btns{display:flex;gap:10px;flex-wrap:wrap}
+.cta-btn{padding:11px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.cta-p{background:var(--gold);color:#fff;border:none}.cta-p:hover{background:var(--gold2)}
+.cta-o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3)}.cta-o:hover{background:rgba(255,255,255,.1)}
+
+#sell{padding:60px 48px;background:#fff}
+.sell-wrap{max-width:680px;margin:0 auto;text-align:center}
+.sell-wrap .sec-title{margin-bottom:8px}
+.sell-intro{text-align:center;color:var(--mu);font-size:14px;margin:6px 0 26px;line-height:1.7}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left}
+.fgrp{display:flex;flex-direction:column;gap:5px}
+.fgrp label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--navy)}
+.fgrp input,.fgrp select,.fgrp textarea{width:100%;padding:10px 13px;background:var(--bg);border:1.5px solid var(--bdr);color:var(--tx);font-size:13px;border-radius:7px;font-family:inherit;outline:none;transition:border-color .2s}
+.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:var(--gold);background:#fff}
+.fgrp input::placeholder,.fgrp textarea::placeholder{color:var(--mu2)}
+.fgrp textarea{resize:vertical;min-height:78px}
+.fg-full{grid-column:1/-1}
+.btn-big{width:100%;padding:13px;background:var(--navy);color:#fff;font-weight:700;font-size:14px;border:none;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .25s;margin-top:6px;box-shadow:0 4px 14px rgba(30,45,90,.2)}
+.btn-big:hover{background:var(--navy2);transform:translateY(-1px)}
+
+#reviews{padding:60px 48px;background:var(--bg)}
+.rv-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px}
+.rv-summary{display:flex;align-items:center;gap:20px;background:#fff;border:1px solid var(--bdr);border-radius:13px;padding:18px 24px;box-shadow:var(--sh)}
+.rv-big{font-family:'Poppins';font-size:48px;font-weight:800;color:var(--navy);line-height:1}
+.rv-stars-avg{color:#F5A623;font-size:17px;letter-spacing:2px;margin:2px 0}
+.rv-cnt{font-size:12px;color:var(--mu)}
+.rv-bars{display:flex;flex-direction:column;gap:4px;min-width:140px}
+.rv-bar-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--mu)}
+.rv-bar-row b{width:8px;text-align:right;color:var(--navy)}
+.rv-track{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.rv-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px}
+.btn-write{padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-write:hover{background:var(--navy2);transform:translateY(-1px)}
+.rv-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.rvpill{padding:6px 15px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr);background:#fff;color:var(--mu);transition:all .2s;font-family:inherit}
+.rvpill.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.rvpill:hover:not(.on){border-color:var(--gold);color:var(--gold)}
+.rv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:18px;margin-bottom:20px}
+.rv-card{background:#fff;border:1px solid var(--bdr);border-radius:13px;padding:20px;animation:fadeUp .4s ease both;transition:box-shadow .25s,border-color .25s}
+.rv-card:hover{box-shadow:var(--sh2);border-color:rgba(232,135,10,.22)}
+.rv-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:8px}
+.rv-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Poppins';font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.rv-nm{font-weight:700;font-size:13px;color:var(--navy)}
+.rv-ci{font-size:11px;color:var(--mu)}
+.rv-st{color:#F5A623;font-size:13px}
+.rv-dt{font-size:11px;color:var(--mu2);white-space:nowrap}
+.rv-car-tag{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--bdr);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;color:var(--navy);margin-bottom:9px}
+.rv-txt{font-size:13px;color:var(--mu);line-height:1.7}
+.btn-more-rv{display:block;margin:0 auto;padding:10px 28px;background:transparent;border:1.5px solid var(--navy);color:var(--navy);border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-more-rv:hover{background:var(--navy);color:#fff}
+
+footer{background:#0f1422;padding:44px 48px 22px}
+.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:44px;margin-bottom:30px}
+.ft-brand img{height:50px;width:auto;filter:brightness(0) invert(1);opacity:.9;margin-bottom:12px}
+.ft-brand p{color:#6B7280;font-size:13px;line-height:1.75;max-width:270px}
+.ft-col h4{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold2);margin-bottom:14px}
+.ft-col a{display:block;color:#6B7280;font-size:13px;text-decoration:none;margin-bottom:7px;transition:color .2s}
+.ft-col a:hover{color:#fff}
+.ft-bot{border-top:1px solid rgba(255,255,255,.06);padding-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.ft-bot p{color:#475569;font-size:12px}
+.ft-live{display:flex;align-items:center;gap:7px;color:#475569;font-size:11px}
+.ft-live span{width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block;animation:blink 2s infinite}
+
+/* Lightbox Gallery */
+.lb-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:3000;align-items:center;justify-content:center}
+.lb-overlay.open{display:flex}
+.lb-content{position:relative;max-width:90%;max-height:90%}
+.lb-image{max-width:100%;max-height:80vh;object-fit:contain;border-radius:8px}
+.lb-prev,.lb-next{position:absolute;top:50%;transform:translateY(-50%);width:50px;height:50px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;cursor:pointer;transition:all .2s;z-index:3001}
+.lb-prev:hover,.lb-next:hover{background:var(--gold);transform:translateY(-50%) scale(1.1)}
+.lb-prev{left:20px}.lb-next{right:20px}
+.lb-close{position:absolute;top:20px;right:30px;font-size:40px;color:#fff;cursor:pointer;z-index:3001;transition:all .2s}
+.lb-close:hover{color:var(--gold);transform:rotate(90deg)}
+.lb-counter{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.7);font-size:14px;background:rgba(0,0,0,.5);padding:5px 12px;border-radius:20px}
+.lb-thumbs{position:absolute;bottom:20px;left:0;right:0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px;background:rgba(0,0,0,.5);margin-top:10px}
+.lb-thumb{width:60px;height:45px;object-fit:cover;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:all .2s;opacity:.6}
+.lb-thumb:hover,.lb-thumb.active{border-color:var(--gold);opacity:1;transform:scale(1.05)}
+
+.ov{display:none;position:fixed;inset:0;z-index:2000;background:rgba(15,20,40,.72);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
+.ov.open{display:flex;animation:ovIn .2s ease}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:16px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.22);animation:mdIn .22s ease;display:flex;flex-direction:column;max-height:92vh}
+.modal-hdr{padding:18px 24px 15px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.modal-hdr h2{font-family:'Poppins';font-size:18px;font-weight:800;color:var(--navy)}
+.modal-x{width:30px;height:30px;background:var(--bg);border:1px solid var(--bdr);border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;color:var(--mu);transition:all .2s}
+.modal-x:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.modal-bdy{padding:20px 24px;overflow-y:auto;flex:1}
+.mfg{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
+.mfg label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--navy)}
+.mfg input,.mfg select,.mfg textarea{width:100%;padding:9px 12px;background:var(--bg);border:1.5px solid var(--bdr);color:var(--tx);font-size:13px;border-radius:7px;font-family:inherit;outline:none}
+.mfg input:focus,.mfg select:focus,.mfg textarea:focus{border-color:var(--gold);background:#fff}
+.spick{display:flex;gap:8px;margin:4px 0 2px}
+.spick span{font-size:30px;cursor:pointer;color:#D1D5DB;transition:color .15s}
+.spick span.lit{color:var(--gold2)}
+.s-hint{font-size:12px;color:var(--mu);min-height:17px;margin-bottom:8px}
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:600;transform:translateY(60px);opacity:0;transition:all .3s;pointer-events:none;max-width:290px}
+#toast.show{transform:none;opacity:1}
+#toast.ok{background:var(--green);color:#fff}
+#toast.err{background:var(--red);color:#fff}
+#toast.inf{background:var(--navy);color:#fff}
+@media(max-width:1020px){nav,#hero,.trust,.cta,#inventory,#sell,#reviews,footer{padding-left:20px;padding-right:20px}}
+@media(max-width:640px){.nav-links{display:none}.hamburger{display:flex}.hero-title{font-size:28px}.fgrid{grid-template-columns:1fr}.ft-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><a href="#hero"><img src="/logo.png" alt="U CARS" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 40%22%3E%3Ctext x=%220%22 y=%2228%22 font-family=%22Poppins%22 font-size=%2228%22 font-weight=%22800%22 fill=%22%231E2D5A%22%3EU%3C/text%3E%3Ctext x=%2232%22 y=%2228%22 font-family=%22Poppins%22 font-size=%2220%22 font-weight=%22700%22 fill=%22%23E8870A%22%3ECARS%3C/text%3E%3C/svg%3E'"></a></div>
+  <div class="nav-links"><a href="#inventory">Inventory</a><a href="#reviews">Reviews</a><a href="#sell">Sell Your Car</a><a href="#footer">Contact</a></div>
+  <div class="nav-right"><button class="btn-sell" onclick="document.getElementById('sell').scrollIntoView({behavior:'smooth'})">Sell Your Car</button></div>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+<div class="mob-nav" id="mobNav"><a href="#inventory">Inventory</a><a href="#reviews">Reviews</a><a href="#sell">Sell Your Car</a><a href="#footer">Contact</a></div>
+
+<section id="hero">
+  <div class="hero-dots"></div>
+  <div class="hero-inner">
+    <div class="hero-pill"><span class="hero-dot"></span>India's Trusted Dealership</div>
+    <h1 class="hero-title">Find Your Perfect<br><span class="acc">Pre-Owned Car</span></h1>
+    <p class="hero-sub">Handpicked, inspected and ready for you. Every U CARS vehicle comes with complete history, verified ownership and a quality guarantee.</p>
+    <div class="hero-btns"><button class="hbtn hbtn-pri" id="heroBrowse">Browse All Cars</button><button class="hbtn hbtn-ghost" id="heroSell">Sell Your Car</button></div>
+    <div class="hero-stats"><div class="hstat"><div class="n" id="statCars">0+</div><div class="l">Cars Available</div></div><div class="hstat"><div class="n">500+</div><div class="l">Happy Buyers</div></div><div class="hstat"><div class="n">15 Yrs</div><div class="l">Experience</div></div><div class="hstat"><div class="n">4.9★</div><div class="l">Google Rating</div></div></div>
+  </div>
+</section>
+
+<div class="trust"><div class="trust-item"><em>🔍</em><div><strong>150-Point Inspection</strong><span>Every car thoroughly checked</span></div></div><div class="trust-item"><em>📄</em><div><strong>Clear Documentation</strong><span>Full history & RC transfer</span></div></div><div class="trust-item"><em>💰</em><div><strong>Best Market Price</strong><span>No hidden charges</span></div></div><div class="trust-item"><em>🤝</em><div><strong>Finance Assistance</strong><span>Loan & insurance help</span></div></div></div>
+
+<section id="inventory"><div class="inv-hd"><div><div class="sec-eye">Browse Collection</div><h2 class="sec-title">Our Inventory</h2></div><div class="inv-pill" id="invPill">Loading...</div></div>
+<div class="filters"><input type="text" id="fSearch" placeholder="Search brand, model..."><select id="fFuel"><option value="">All Fuel Types</option><option>Petrol</option><option>Diesel</option><option>Electric</option><option>Hybrid</option><option>CNG</option></select><select id="fTrans"><option value="">All Transmissions</option><option>Automatic</option><option>Manual</option><option>CVT</option></select><select id="fStatus"><option value="">All Status</option><option value="available">Available</option><option value="sold">Sold</option></select><button class="fbtn-c" id="btnClear">✕ Clear</button><button class="fbtn-s" id="btnSearch">Search</button></div>
+<div id="grid"></div></section>
+
+<div class="cta"><div><h3>Found the car you love?</h3><p>Call or WhatsApp us — Mon–Sat, 9 AM to 7 PM</p></div><div class="cta-btns"><button class="cta-btn cta-p" id="btnCall">📞 Call Now</button><button class="cta-btn cta-o" id="btnWA">💬 WhatsApp</button></div></div>
+
+<section id="sell"><div class="sell-wrap"><div class="sec-eye" style="text-align:center">Want to Sell?</div><h2 class="sec-title">List Your Car With Us</h2><p class="sell-intro">Fill in your details — our team will contact you within 24 hours.</p>
+<div class="fgrid"><div class="fgrp"><label>Your Name *</label><input id="sName" placeholder="Full name"></div><div class="fgrp"><label>Phone *</label><input id="sPhone" type="tel" placeholder="+91 98765 43210"></div><div class="fgrp"><label>Email</label><input id="sEmail" type="email" placeholder="you@email.com"></div><div class="fgrp"><label>Car Make *</label><input id="sMake" placeholder="Toyota, BMW..."></div><div class="fgrp"><label>Model *</label><input id="sModel" placeholder="Fortuner, City..."></div><div class="fgrp"><label>Year</label><input id="sYear" type="number" placeholder="2020"></div><div class="fgrp"><label>Km Driven</label><input id="sKm" placeholder="45,000 km"></div><div class="fgrp"><label>Ownership</label><select id="sOwn"><option value="">Select...</option><option>1st Owner</option><option>2nd Owner</option><option>3rd Owner</option></select></div><div class="fgrp fg-full"><label>Notes / Expected Price</label><textarea id="sNotes" placeholder="Condition, price expectations..."></textarea></div></div>
+<button class="btn-big" id="btnSell">Submit Inquiry →</button></div></section>
+
+<section id="reviews"><div class="rv-top"><div><div class="sec-eye">What Clients Say</div><h2 class="sec-title">Customer Reviews</h2></div><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div class="rv-summary"><div><div class="rv-big" id="rvAvg">0</div><div class="rv-stars-avg" id="rvStars">☆☆☆☆☆</div><div class="rv-cnt" id="rvCnt">0 reviews</div></div><div class="rv-bars" id="rvBars"></div></div><button class="btn-write" id="btnWriteRv">✍ Write a Review</button></div></div>
+<div class="rv-pills"><button class="rvpill on" data-f="0">All Reviews</button><button class="rvpill" data-f="5">5 Stars</button><button class="rvpill" data-f="4">4 Stars</button><button class="rvpill" data-f="3">3 Stars</button></div>
+<div class="rv-grid" id="rvGrid"></div><button class="btn-more-rv" id="btnMoreRv" style="display:none">Load More Reviews</button></section>
+
+<footer id="footer"><div class="ft-grid"><div class="ft-brand"><img src="/logo.png" alt="U CARS" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 40%22%3E%3Ctext x=%220%22 y=%2228%22 font-family=%22Poppins%22 font-size=%2228%22 font-weight=%22800%22 fill=%22%23E8870A%22%3EU%3C/text%3E%3Ctext x=%2232%22 y=%2228%22 font-family=%22Poppins%22 font-size=%2220%22 font-weight=%22700%22 fill=%22%23fff%22%3ECARS%3C/text%3E%3C/svg%3E'"><p>India's most trusted pre-owned car dealership. Driven by quality, transparency, and your satisfaction.</p></div><div class="ft-col"><h4>Quick Links</h4><a href="#inventory">Inventory</a><a href="#reviews">Reviews</a><a href="#sell">Sell Your Car</a></div><div class="ft-col"><h4>Contact</h4><a href="tel:+919876543210">📞 +91 98765 43210</a><a href="mailto:info@ucars.in">✉ info@ucars.in</a><a>📍 Andheri West, Mumbai</a><a>🕐 Mon–Sat 9AM–7PM</a></div></div><div class="ft-bot"><p>© 2025 U CARS. All rights reserved.</p><div class="ft-live"><span></span> Live inventory updated daily</div></div></footer>
+
+<!-- Lightbox Gallery -->
+<div id="lightbox" class="lb-overlay">
+    <span class="lb-close" onclick="closeLightbox()">×</span>
+    <span class="lb-prev" onclick="prevImage()">‹</span>
+    <span class="lb-next" onclick="nextImage()">›</span>
+    <div class="lb-content"><img id="lbImage" class="lb-image" src=""></div>
+    <div class="lb-counter" id="lbCounter"></div>
+    <div class="lb-thumbs" id="lbThumbs"></div>
+</div>
+
+<!-- Inquire Modal -->
+<div class="ov" id="ovInq"><div class="modal" style="max-width:460px"><div class="modal-hdr"><h2 id="inqTitle">Inquire About Car</h2><button class="modal-x" data-close="ovInq">✕</button></div><div class="modal-bdy"><div class="mfg"><label>Your Name *</label><input id="inqName"></div><div class="mfg"><label>Phone *</label><input id="inqPhone" type="tel"></div><div class="mfg"><label>Email</label><input id="inqEmail" type="email"></div><div class="mfg"><label>Message</label><textarea id="inqMsg"></textarea></div><button class="btn-big" id="btnInqSubmit">Send Inquiry →</button></div></div></div>
+
+<!-- Write Review Modal -->
+<div class="ov" id="ovReview"><div class="modal" style="max-width:460px"><div class="modal-hdr"><h2>✍ Write a Review</h2><button class="modal-x" data-close="ovReview">✕</button></div><div class="modal-bdy"><div class="mfg"><label>Your Rating *</label><div class="spick" id="spick"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div><div class="s-hint" id="sHint">Click a star to rate</div></div><div class="mfg"><label>Your Name *</label><input id="rvName"></div><div class="mfg"><label>City</label><input id="rvCity"></div><div class="mfg"><label>Car Purchased / Sold</label><input id="rvCar"></div><div class="mfg"><label>Your Review *</label><textarea id="rvText"></textarea></div><button class="btn-big" id="btnRvSubmit">Submit Review →</button></div></div></div>
+
+<div id="toast"></div>
+
+<script>
+let currentCarId = null;
+let currentReviewFilter = 0;
+let allReviews = [];
+let currentGalleryImages = [];
+let currentGalleryIndex = 0;
+
+function toast(msg, type) { let t = document.getElementById('toast'); t.textContent = msg; t.className = 'show ' + (type || 'inf'); setTimeout(() => t.className = '', 3000); }
+
+async function fetchCars() {
+    const res = await fetch('/api/cars');
+    return await res.json();
+}
+
+function openLightbox(images, startIndex) {
+    currentGalleryImages = images;
+    currentGalleryIndex = startIndex;
+    document.getElementById('lightbox').classList.add('open');
+    updateLightbox();
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function updateLightbox() {
+    const img = document.getElementById('lbImage');
+    img.src = currentGalleryImages[currentGalleryIndex];
+    document.getElementById('lbCounter').textContent = (currentGalleryIndex + 1) + ' / ' + currentGalleryImages.length;
+    
+    const thumbsDiv = document.getElementById('lbThumbs');
+    thumbsDiv.innerHTML = currentGalleryImages.map((imgSrc, idx) => 
+        `<img src="${imgSrc}" class="lb-thumb ${idx === currentGalleryIndex ? 'active' : ''}" onclick="setImageIndex(${idx})">`
+    ).join('');
+}
+
+function setImageIndex(idx) {
+    currentGalleryIndex = idx;
+    updateLightbox();
+}
+
+function nextImage() {
+    if (currentGalleryIndex < currentGalleryImages.length - 1) {
+        currentGalleryIndex++;
+        updateLightbox();
+    }
+}
+
+function prevImage() {
+    if (currentGalleryIndex > 0) {
+        currentGalleryIndex--;
+        updateLightbox();
+    }
+}
+
+async function openCarDetail(id) {
+    const res = await fetch(`/api/cars/${id}`);
+    const car = await res.json();
+    if (car.images && car.images.length > 0) {
+        openLightbox(car.images, 0);
+    } else {
+        toast('No images available for this car', 'inf');
+    }
+}
+
+async function renderGrid() {
+    let cars = await fetchCars();
+    document.getElementById('statCars').innerHTML = cars.filter(c => c.status === 'available').length + '+';
+    document.getElementById('invPill').innerHTML = 'Showing ' + cars.length + ' cars';
+    
+    const search = document.getElementById('fSearch').value.toLowerCase();
+    const fuel = document.getElementById('fFuel').value;
+    const trans = document.getElementById('fTrans').value;
+    const status = document.getElementById('fStatus').value;
+    
+    let filtered = cars.filter(c => {
+        if (search && !(c.make + ' ' + c.model + ' ' + c.year).toLowerCase().includes(search)) return false;
+        if (fuel && c.fuel !== fuel) return false;
+        if (trans && c.trans !== trans) return false;
+        if (status && c.status !== status) return false;
+        return true;
+    });
+    
+    if (filtered.length === 0) {
+        document.getElementById('grid').innerHTML = '<div class="no-cars">🚗 No cars available. Check back soon!</div>';
+        return;
+    }
+    
+    document.getElementById('grid').innerHTML = filtered.map(c => `
+        <div class="ccard"><div class="ccard-img" onclick="openCarDetail(${c.id})"><img src="${c.image || '/uploads/placeholder.jpg'}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 60%22%3E%3Crect width=%22100%22 height=%2260%22 fill=%22%23333%22/%3E%3Ctext x=%2250%22 y=%2235%22 text-anchor=%22middle%22 fill=%22%23666%22%3E🚗%3C/text%3E%3C/svg%3E'"><div class="ccard-ov"><div class="view-lbl">📷 View Gallery</div></div><span class="st-badge ${c.status === 'available' ? 'st-avail' : 'st-sold'}">${c.status === 'available' ? 'Available' : 'Sold'}</span></div><div class="ccard-body"><div class="c-make">${c.make}</div><div class="c-name">${c.model}</div><div class="c-meta">${c.year} · ${c.own || ''}</div><div class="c-specs"><span class="c-pill">🛣 ${c.km || 'N/A'} km</span><span class="c-pill">⛽ ${c.fuel || 'N/A'}</span><span class="c-pill">⚙ ${c.trans || 'N/A'}</span></div><div class="c-desc">${c.description || ''}</div><div class="c-foot"><div class="c-price">₹${(c.price/100000).toFixed(1)}L<small>Incl. taxes</small></div><button class="btn-inq" ${c.status !== 'available' ? 'disabled' : ''} onclick="event.stopPropagation(); openInquiry(${c.id}, '${c.make} ${c.model}')">${c.status === 'available' ? 'Inquire' : 'Sold'}</button></div></div></div>
+    `).join('');
+}
+
+function openInquiry(carId, carName) {
+    currentCarId = carId;
+    document.getElementById('inqTitle').innerHTML = `Inquire: ${carName}`;
+    document.getElementById('inqName').value = '';
+    document.getElementById('inqPhone').value = '';
+    document.getElementById('inqEmail').value = '';
+    document.getElementById('inqMsg').value = '';
+    document.getElementById('ovInq').classList.add('open');
+}
+
+document.getElementById('btnInqSubmit').onclick = async () => {
+    const name = document.getElementById('inqName').value;
+    const phone = document.getElementById('inqPhone').value;
+    if (!name || !phone) { toast('Please enter name and phone', 'err'); return; }
+    await fetch('/api/inquire', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ car_id: currentCarId, car_name: document.getElementById('inqTitle').innerHTML.replace('Inquire: ', ''), name, phone, email: document.getElementById('inqEmail').value, message: document.getElementById('inqMsg').value })
+    });
+    toast('✅ Inquiry sent! We will call you soon.', 'ok');
+    document.getElementById('ovInq').classList.remove('open');
+};
+
+document.getElementById('btnSell').onclick = async () => {
+    const name = document.getElementById('sName').value;
+    const phone = document.getElementById('sPhone').value;
+    const make = document.getElementById('sMake').value;
+    const model = document.getElementById('sModel').value;
+    if (!name || !phone || !make || !model) { toast('Please fill Name, Phone, Make and Model', 'err'); return; }
+    await fetch('/api/sell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, email: document.getElementById('sEmail').value, make, model, year: document.getElementById('sYear').value, km: document.getElementById('sKm').value, own: document.getElementById('sOwn').value, notes: document.getElementById('sNotes').value })
+    });
+    toast('✅ Request submitted! We will contact you within 24 hours.', 'ok');
+    document.getElementById('sName').value = document.getElementById('sPhone').value = document.getElementById('sMake').value = document.getElementById('sModel').value = document.getElementById('sYear').value = document.getElementById('sKm').value = document.getElementById('sNotes').value = '';
+};
+
+async function loadReviews() {
+    const res = await fetch('/api/reviews');
+    allReviews = await res.json();
+    const avg = allReviews.length ? allReviews.reduce((s,r)=>s+r.rating,0)/allReviews.length : 0;
+    document.getElementById('rvAvg').innerHTML = avg.toFixed(1);
+    document.getElementById('rvStars').innerHTML = '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg));
+    document.getElementById('rvCnt').innerHTML = allReviews.length + ' review' + (allReviews.length !== 1 ? 's' : '');
+    
+    let filtered = currentReviewFilter ? allReviews.filter(r => r.rating === currentReviewFilter) : allReviews;
+    document.getElementById('rvGrid').innerHTML = filtered.map(r => `<div class="rv-card"><div class="rv-head"><div style="display:flex;gap:10px"><div class="rv-av" style="background:#${Math.floor(Math.random()*16777215).toString(16)}">${r.name[0]}</div><div><div class="rv-nm">${r.name}</div><div class="rv-ci">${r.city || 'India'}</div><div class="rv-st">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div></div></div><div class="rv-dt">${r.created_at?.split('T')[0]}</div></div>${r.car ? `<div class="rv-car-tag">🚗 ${r.car}</div>` : ''}<div class="rv-txt">${r.review_text}</div></div>`).join('');
+}
+
+document.querySelectorAll('.rvpill').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.rvpill').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        currentReviewFilter = parseInt(btn.dataset.f);
+        loadReviews();
+    };
+});
+
+document.getElementById('btnWriteRv').onclick = () => document.getElementById('ovReview').classList.add('open');
+
+let reviewRating = 0;
+document.querySelectorAll('#spick span').forEach(s => {
+    s.onmouseover = () => { document.querySelectorAll('#spick span').forEach((ss,i) => ss.classList.toggle('lit', i < parseInt(s.dataset.v))); };
+    s.onmouseout = () => { document.querySelectorAll('#spick span').forEach((ss,i) => ss.classList.toggle('lit', i < reviewRating)); };
+    s.onclick = () => { reviewRating = parseInt(s.dataset.v); document.getElementById('sHint').innerHTML = ['','Poor','Fair','Good','Very Good','Excellent! 🌟'][reviewRating]; };
+});
+
+document.getElementById('btnRvSubmit').onclick = async () => {
+    if(!reviewRating) { toast('Please select a rating', 'err'); return; }
+    const name = document.getElementById('rvName').value;
+    const text = document.getElementById('rvText').value;
+    if(!name || !text) { toast('Please enter name and review', 'err'); return; }
+    await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, city: document.getElementById('rvCity').value, car: document.getElementById('rvCar').value, rating: reviewRating, review_text: text }) });
+    toast('Thank you for your review!', 'ok');
+    document.getElementById('ovReview').classList.remove('open');
+    loadReviews();
+};
+
+document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.onclick = () => document.getElementById(btn.dataset.close).classList.remove('open');
+});
+
+document.getElementById('heroBrowse').onclick = () => document.getElementById('inventory').scrollIntoView({behavior:'smooth'});
+document.getElementById('heroSell').onclick = () => document.getElementById('sell').scrollIntoView({behavior:'smooth'});
+document.getElementById('btnCall').onclick = () => window.open('tel:+919876543210');
+document.getElementById('btnWA').onclick = () => window.open('https://wa.me/919876543210','_blank');
+document.getElementById('btnClear').onclick = () => { document.getElementById('fSearch').value = ''; document.getElementById('fFuel').value = ''; document.getElementById('fTrans').value = ''; document.getElementById('fStatus').value = ''; renderGrid(); };
+document.getElementById('btnSearch').onclick = () => renderGrid();
+document.getElementById('hamburger').onclick = () => document.getElementById('mobNav').classList.toggle('open');
+
+// Keyboard navigation for lightbox
+document.addEventListener('keydown', (e) => {
+    if (document.getElementById('lightbox').classList.contains('open')) {
+        if (e.key === 'ArrowLeft') prevImage();
+        else if (e.key === 'ArrowRight') nextImage();
+        else if (e.key === 'Escape') closeLightbox();
+    }
+});
+
+renderGrid();
+loadReviews();
+</script>
+</body>
+</html>
