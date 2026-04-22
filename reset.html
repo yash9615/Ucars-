@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Password - UCARS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1E2D5A, #263880);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h2 { color: #1E2D5A; margin-bottom: 20px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #E8870A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { background: #F5A623; }
+        .msg {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+            font-size: 14px;
+        }
+        .success { background: #d4edda; color: #155724; display: block; }
+        .error { background: #f8d7da; color: #721c24; display: block; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>🔐 Reset Admin Password</h2>
+        <p style="color:#666; font-size:14px; margin-bottom:20px">Enter your new password below</p>
+        <input type="password" id="newPass" placeholder="New Password">
+        <input type="password" id="confirmPass" placeholder="Confirm Password">
+        <button onclick="resetPassword()">Reset Password</button>
+        <div id="msg" class="msg"></div>
+    </div>
+
+    <script>
+        async function resetPassword() {
+            const newPass = document.getElementById('newPass').value;
+            const confirmPass = document.getElementById('confirmPass').value;
+            const msgDiv = document.getElementById('msg');
+            
+            if (!newPass) {
+                msgDiv.className = 'msg error';
+                msgDiv.innerHTML = '❌ Please enter a password';
+                return;
+            }
+            
+            if (newPass !== confirmPass) {
+                msgDiv.className = 'msg error';
+                msgDiv.innerHTML = '❌ Passwords do not match!';
+                return;
+            }
+            
+            if (newPass.length < 4) {
+                msgDiv.className = 'msg error';
+                msgDiv.innerHTML = '❌ Password must be at least 4 characters';
+                return;
+            }
+            
+            msgDiv.className = 'msg';
+            msgDiv.innerHTML = '⏳ Resetting password...';
+            msgDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/admin/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newPassword: newPass })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    msgDiv.className = 'msg success';
+                    msgDiv.innerHTML = '✅ Password changed successfully!<br>New Password: ' + newPass + '<br><br>Redirecting to admin panel...';
+                    setTimeout(() => {
+                        window.location.href = '/admin';
+                    }, 3000);
+                } else {
+                    msgDiv.className = 'msg error';
+                    msgDiv.innerHTML = '❌ ' + (data.error || 'Failed to change password');
+                }
+            } catch (error) {
+                msgDiv.className = 'msg error';
+                msgDiv.innerHTML = '❌ Connection error. Make sure you are on the live site!';
+            }
+        }
+    </script>
+</body>
+</html>
