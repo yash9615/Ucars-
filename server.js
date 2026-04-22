@@ -330,7 +330,22 @@ app.get('/admin', (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-
+// Password reset endpoint (remove after use for security)
+app.post('/api/admin/reset-password', (req, res) => {
+    const { newPassword } = req.body;
+    
+    if (!newPassword || newPassword.length < 4) {
+        return res.status(400).json({ error: 'Password must be at least 4 characters' });
+    }
+    
+    db.run("UPDATE admin SET password = ? WHERE id = 1", [newPassword], function(err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        console.log('✅ Admin password changed!');
+        res.json({ success: true, message: 'Password updated' });
+    });
+});
 app.listen(PORT, () => {
     console.log(`\n🚗 ========== UCARS MARKETPLACE ==========`);
     console.log(`✅ Server: http://localhost:${PORT}`);
