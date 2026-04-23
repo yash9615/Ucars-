@@ -1,7 +1,7 @@
 {
   "name": "ucars",
   "version": "1.0.0",
-  "description": "UCARS - Car Marketplace",
+  "description": "UCARS - Car Marketplace with Supabase",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -16,8 +16,8 @@
     "express-session": "^1.17.3",
     "helmet": "^7.0.0",
     "multer": "^1.4.5-lts.1",
-    "pg": "^8.20.0",
-    "sharp": "^0.34.5",
+    "pg": "^8.11.5",
+    "sharp": "^0.33.5",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
