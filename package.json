@@ -4,10 +4,7 @@
   "description": "UCARS - Car Marketplace with Supabase",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "backup": "node backup.js",
-    "restore": "node restore.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -17,10 +14,6 @@
     "helmet": "^7.0.0",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.5",
-    "sharp": "^0.33.5",
-    "sqlite3": "^5.1.6"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.22"
+    "sharp": "^0.33.5"
   }
 }
