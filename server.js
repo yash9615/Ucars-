@@ -7,9 +7,10 @@ const session = require('express-session');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const sharp = require('sharp'); // ADDED FOR IMAGE COMPRESSION
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet({ contentSecurityPolicy: false }));
@@ -17,12 +18,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Session configuration - FIXED for persistent login
+// Session configuration
 app.use(session({
-    secret: 'ucars_super_secret_key_2025',
+    secret: process.env.SESSION_SECRET || 'ucars_secret_key_2025',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
 // Rate limiting
@@ -38,16 +39,29 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'public/uploads/'),
     filename: (req, file, cb) => {
         const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, unique + path.extname(file.originalname));
+        cb(null, unique + '.jpg'); // Force .jpg extension
     }
 });
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+
+// FUNCTION TO COMPRESS IMAGE
+async function compressImage(inputPath, outputPath) {
+    try {
+        await sharp(inputPath)
+            .resize(1200, 800, { fit: 'inside', withoutEnlargement: true })
+            .jpeg({ quality: 75, progressive: true })
+            .toFile(outputPath);
+        return true;
+    } catch (error) {
+        console.error('Compression error:', error);
+        return false;
+    }
+}
 
 // Database setup
 const db = new sqlite3.Database('ucars.db');
 
 db.serialize(() => {
-    // Cars table
     db.run(`CREATE TABLE IF NOT EXISTS cars (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         make TEXT, model TEXT, year INTEGER, price INTEGER,
@@ -56,14 +70,12 @@ db.serialize(() => {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
     
-    // Images table
     db.run(`CREATE TABLE IF NOT EXISTS car_images (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         car_id INTEGER, image_path TEXT,
         FOREIGN KEY(car_id) REFERENCES cars(id) ON DELETE CASCADE
     )`);
     
-    // Seller inquiries with contacted status
     db.run(`CREATE TABLE IF NOT EXISTS seller_inquiries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT, phone TEXT, email TEXT, make TEXT,
@@ -72,7 +84,6 @@ db.serialize(() => {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
     
-    // Buyer inquiries with contacted status
     db.run(`CREATE TABLE IF NOT EXISTS buyer_inquiries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         car_id INTEGER, car_name TEXT, name TEXT,
@@ -81,7 +92,6 @@ db.serialize(() => {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
     
-    // Reviews table
     db.run(`CREATE TABLE IF NOT EXISTS reviews (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT, city TEXT, car TEXT, rating INTEGER,
@@ -89,27 +99,21 @@ db.serialize(() => {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
     
-    // Admin table
     db.run(`CREATE TABLE IF NOT EXISTS admin (
         id INTEGER PRIMARY KEY,
         username TEXT, password TEXT
     )`);
     
-    // Insert default admin
     db.get("SELECT * FROM admin WHERE id = 1", (err, row) => {
         if (!row) {
-            db.run("INSERT INTO admin (id, username, password) VALUES (1, 'admin', 'admin123')", (err) => {
-                if (!err) console.log('✅ Admin created: admin / admin123');
-            });
-        } else {
-            console.log('✅ Admin exists: admin / admin123');
+            db.run("INSERT INTO admin (id, username, password) VALUES (1, 'admin', 'admin123')");
+            console.log('✅ Admin created: admin / admin123');
         }
     });
 });
 
 // ============ API ROUTES ============
 
-// Get all cars
 app.get('/api/cars', (req, res) => {
     db.all(`SELECT c.*, 
             (SELECT image_path FROM car_images WHERE car_id = c.id LIMIT 1) as image 
@@ -119,7 +123,6 @@ app.get('/api/cars', (req, res) => {
     });
 });
 
-// Get single car with images
 app.get('/api/cars/:id', (req, res) => {
     db.get("SELECT * FROM cars WHERE id = ?", [req.params.id], (err, car) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -130,48 +133,32 @@ app.get('/api/cars/:id', (req, res) => {
     });
 });
 
-// Admin login - FIXED persistent session
 app.post('/api/admin/login', (req, res) => {
     const { username, password } = req.body;
-    console.log('Login attempt:', username);
-    
     db.get("SELECT * FROM admin WHERE username = ? AND password = ?", [username, password], (err, admin) => {
-        if (err) {
-            console.log('Database error:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
         if (admin) {
             req.session.regenerate((err) => {
-                if (err) return res.status(500).json({ error: 'Session error' });
                 req.session.admin = true;
-                req.session.adminUser = username;
-                req.session.save((err) => {
-                    if (err) return res.status(500).json({ error: 'Session save error' });
-                    console.log('Login successful for:', username);
-                    res.json({ success: true });
-                });
+                req.session.save();
+                res.json({ success: true });
             });
         } else {
-            console.log('Login failed for:', username);
-            res.status(401).json({ error: 'Invalid credentials. Use admin / admin123' });
+            res.status(401).json({ error: 'Invalid credentials' });
         }
     });
 });
 
-// Check admin session
 app.get('/api/admin/check', (req, res) => {
     res.json({ loggedIn: !!req.session.admin });
 });
 
-// Admin logout
 app.post('/api/admin/logout', (req, res) => {
-    req.session.destroy((err) => {
-        res.json({ success: true });
-    });
+    req.session.destroy();
+    res.json({ success: true });
 });
 
-// Add car with images
-app.post('/api/admin/cars', upload.array('images', 15), (req, res) => {
+// ADD CAR WITH AUTO-COMPRESSION
+app.post('/api/admin/cars', upload.array('images', 15), async (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     
     const { make, model, year, price, km, fuel, trans, color, own, reg, description, status } = req.body;
@@ -179,20 +166,33 @@ app.post('/api/admin/cars', upload.array('images', 15), (req, res) => {
     db.run(`INSERT INTO cars (make, model, year, price, km, fuel, trans, color, own, reg, description, status) 
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
         [make, model, year, price, km, fuel, trans, color, own, reg, description, status || 'available'],
-        function(err) {
+        async function(err) {
             if (err) return res.status(500).json({ error: err.message });
             const carId = this.lastID;
+            
             if (req.files && req.files.length > 0) {
-                req.files.forEach(file => {
-                    db.run("INSERT INTO car_images (car_id, image_path) VALUES (?, ?)", [carId, '/uploads/' + file.filename]);
-                });
+                for (const file of req.files) {
+                    const originalPath = file.path;
+                    const compressedPath = originalPath.replace('.jpg', '_comp.jpg');
+                    
+                    // Compress the image
+                    await compressImage(originalPath, compressedPath);
+                    
+                    // Replace original with compressed
+                    if (fs.existsSync(compressedPath)) {
+                        fs.renameSync(compressedPath, originalPath);
+                    }
+                    
+                    db.run("INSERT INTO car_images (car_id, image_path) VALUES (?, ?)", 
+                        [carId, '/uploads/' + path.basename(originalPath)]);
+                }
             }
             res.json({ success: true, carId });
         });
 });
 
-// Update car
-app.put('/api/admin/cars/:id', upload.array('newImages', 15), (req, res) => {
+// UPDATE CAR WITH AUTO-COMPRESSION
+app.put('/api/admin/cars/:id', upload.array('newImages', 15), async (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     
     const { make, model, year, price, km, fuel, trans, color, own, reg, description, status } = req.body;
@@ -200,18 +200,28 @@ app.put('/api/admin/cars/:id', upload.array('newImages', 15), (req, res) => {
     db.run(`UPDATE cars SET make=?, model=?, year=?, price=?, km=?, fuel=?, trans=?, color=?, own=?, reg=?, description=?, status=?
             WHERE id=?`,
         [make, model, year, price, km, fuel, trans, color, own, reg, description, status, req.params.id],
-        function(err) {
+        async function(err) {
             if (err) return res.status(500).json({ error: err.message });
+            
             if (req.files && req.files.length > 0) {
-                req.files.forEach(file => {
-                    db.run("INSERT INTO car_images (car_id, image_path) VALUES (?, ?)", [req.params.id, '/uploads/' + file.filename]);
-                });
+                for (const file of req.files) {
+                    const originalPath = file.path;
+                    const compressedPath = originalPath.replace('.jpg', '_comp.jpg');
+                    
+                    await compressImage(originalPath, compressedPath);
+                    
+                    if (fs.existsSync(compressedPath)) {
+                        fs.renameSync(compressedPath, originalPath);
+                    }
+                    
+                    db.run("INSERT INTO car_images (car_id, image_path) VALUES (?, ?)", 
+                        [req.params.id, '/uploads/' + path.basename(originalPath)]);
+                }
             }
             res.json({ success: true });
         });
 });
 
-// Delete car
 app.delete('/api/admin/cars/:id', (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     
@@ -227,7 +237,6 @@ app.delete('/api/admin/cars/:id', (req, res) => {
     });
 });
 
-// Toggle car status
 app.patch('/api/admin/cars/:id/status', (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     const { status } = req.body;
@@ -236,7 +245,6 @@ app.patch('/api/admin/cars/:id/status', (req, res) => {
     });
 });
 
-// Seller inquiry
 app.post('/api/sell', (req, res) => {
     const { name, phone, email, make, model, year, km, own, notes } = req.body;
     db.run(`INSERT INTO seller_inquiries (name, phone, email, make, model, year, km, own, notes) 
@@ -246,7 +254,6 @@ app.post('/api/sell', (req, res) => {
         });
 });
 
-// Buyer inquiry
 app.post('/api/inquire', (req, res) => {
     const { car_id, car_name, name, phone, email, message } = req.body;
     db.run(`INSERT INTO buyer_inquiries (car_id, car_name, name, phone, email, message) 
@@ -256,7 +263,6 @@ app.post('/api/inquire', (req, res) => {
         });
 });
 
-// Get seller inquiries (admin) with contacted status
 app.get('/api/admin/seller-inquiries', (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     db.all("SELECT * FROM seller_inquiries ORDER BY contacted ASC, created_at DESC", (err, rows) => {
@@ -264,7 +270,6 @@ app.get('/api/admin/seller-inquiries', (req, res) => {
     });
 });
 
-// Update seller inquiry contacted status
 app.patch('/api/admin/seller-inquiries/:id/contacted', (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     const { contacted } = req.body;
@@ -273,7 +278,6 @@ app.patch('/api/admin/seller-inquiries/:id/contacted', (req, res) => {
     });
 });
 
-// Get buyer inquiries (admin) with contacted status
 app.get('/api/admin/buyer-inquiries', (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     db.all("SELECT * FROM buyer_inquiries ORDER BY contacted ASC, created_at DESC", (err, rows) => {
@@ -281,7 +285,6 @@ app.get('/api/admin/buyer-inquiries', (req, res) => {
     });
 });
 
-// Update buyer inquiry contacted status
 app.patch('/api/admin/buyer-inquiries/:id/contacted', (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     const { contacted } = req.body;
@@ -290,14 +293,12 @@ app.patch('/api/admin/buyer-inquiries/:id/contacted', (req, res) => {
     });
 });
 
-// Get reviews
 app.get('/api/reviews', (req, res) => {
     db.all("SELECT * FROM reviews ORDER BY created_at DESC", (err, rows) => {
         res.json(rows || []);
     });
 });
 
-// Add review
 app.post('/api/reviews', (req, res) => {
     const { name, city, car, rating, review_text } = req.body;
     db.run(`INSERT INTO reviews (name, city, car, rating, review_text, verified) 
@@ -307,7 +308,6 @@ app.post('/api/reviews', (req, res) => {
         });
 });
 
-// Delete review (admin)
 app.delete('/api/admin/reviews/:id', (req, res) => {
     if (!req.session.admin) return res.status(401).json({ error: 'Unauthorized' });
     db.run("DELETE FROM reviews WHERE id = ?", [req.params.id], (err) => {
@@ -315,10 +315,21 @@ app.delete('/api/admin/reviews/:id', (req, res) => {
     });
 });
 
-// Get brands for filter
 app.get('/api/brands', (req, res) => {
     db.all("SELECT DISTINCT make FROM cars WHERE make IS NOT NULL", (err, rows) => {
         res.json(rows.map(r => r.make));
+    });
+});
+
+// Password reset endpoint
+app.post('/api/admin/reset-password', (req, res) => {
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 4) {
+        return res.status(400).json({ error: 'Password must be at least 4 characters' });
+    }
+    db.run("UPDATE admin SET password = ? WHERE id = 1", [newPassword], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
     });
 });
 
@@ -330,27 +341,10 @@ app.get('/admin', (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-// Password reset endpoint (remove after use for security)
-app.post('/api/admin/reset-password', (req, res) => {
-    const { newPassword } = req.body;
-    
-    if (!newPassword || newPassword.length < 4) {
-        return res.status(400).json({ error: 'Password must be at least 4 characters' });
-    }
-    
-    db.run("UPDATE admin SET password = ? WHERE id = 1", [newPassword], function(err) {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        console.log('✅ Admin password changed!');
-        res.json({ success: true, message: 'Password updated' });
-    });
-});
+
 app.listen(PORT, () => {
     console.log(`\n🚗 ========== UCARS MARKETPLACE ==========`);
-    console.log(`✅ Server: http://localhost:${PORT}`);
-    console.log(`📱 Website: http://localhost:${PORT}`);
-    console.log(`🔑 Admin Panel: http://localhost:${PORT}/admin`);
-    console.log(`👤 Login: admin / admin123`);
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`🖼️ Image compression ENABLED (1200px, 75% quality)`);
     console.log(`=========================================\n`);
 });
