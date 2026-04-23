@@ -1,7 +1,54 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Database files (CRITICAL - contains your data!)
 ucars.db
 *.db
+*.sqlite
+*.sqlite3
+
+# Backups (keep locally only)
 backups/
+*.backup
+*.bak
+
+# Restore scripts (contains passwords!)
+restore.js
+restore-simple.js
+backup.js
+
+# Uploaded images (will be re-uploaded)
 public/uploads/
-node_modules/
+public/temp/
+
+# Environment variables (contains secrets)
 .env
+.env.local
+.env.production
+
+# Password reset page (security risk)
+reset.html
+
+# Logs
+*.log
+logs/
+log.txt
+
+# OS files
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Package lock (optional - Render will generate)
+package-lock.json
+
+# Session files
+.session
